@@ -100,11 +100,18 @@ if (isset($_POST['choice'])) {
              $has_sorethroat,
              $has_shortnessBreath,
              $has_influenza_Symptoms,
+
              $has_history_Covid,
               $have_localTransimission,
                $have_contact_recentTravel,
                $has_inluenza_illness,
-                $has_contactConfirm
+                $has_contactConfirm,
+
+                 $medicine,
+                 $existingConditions,
+                 $admissionDate,
+                 $admitted_conditions,
+                 $historyICU
 
 
 

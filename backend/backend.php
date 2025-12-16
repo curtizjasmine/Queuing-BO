@@ -68,7 +68,12 @@ class login extends database {
               $have_localTransimission,
                $have_contact_recentTravel,
                $has_inluenza_illness,
-                $has_contactConfirm
+                $has_contactConfirm,
+                 $medicine,
+                  $existingConditions,
+                  $admissionDate,
+                  $admitted_conditions,
+                  $historyICU
              ){
     
            $this->BP = $BP;
@@ -97,6 +102,14 @@ class login extends database {
            $this-> has_inluenza_illness = $has_inluenza_illness;
            $this-> has_contactConfirm =  $has_contactConfirm;
 
+           $this-> medicine = $medicine;
+           $this-> existingConditions =  $existingConditions;
+           $this-> admissionDate =  $admissionDate;
+           $this-> admitted_conditions = $admitted_conditions;
+           $this-> historyICU =  $historyICU;
+
+
+
         return $this->hasCompleted();
     }
     public function SkippedTickets($id,$remarks,$stat){
@@ -109,7 +122,8 @@ class login extends database {
         $conn = $this->connect();
  $updated = PatientQuery::doupdatePatients($conn, $this->patient_id,$this->BP, $this->fname, $this->lname,$this->mname, $this->users_gender,$this->home_address, $this->age,
 $this->BOD,$this->Weight,$this->pressure,$this->civil_Status,$this->contact_no,$this->Comp_stat,$this->sym_fever,$this->has_cough,$this->has_sorethroat,$this->has_shortnessBreath,
-$this-> has_influenza_Symptoms);
+$this-> has_influenza_Symptoms,$this->has_history_Covid, $this-> have_localTransimission, $this-> have_contact_recentTravel,$this->  has_inluenza_illness,$this->has_contactConfirm,
+$this-> medicine,$this-> existingConditions,$this-> admissionDate,$this-> admitted_conditions,$this-> historyICU);
 
         if ($updated) {
             return json_encode(["success" => true]);

@@ -229,6 +229,40 @@ completed(id) {
             this.pendingTickets = Array.isArray(res.data) ? res.data : [];
             this.selectedTicket = null;
             this.broadcastUpdate('update_queue');
+            this.fname = null;
+            this.lname = null;
+            this.mname = null;
+            this.BOD = null;
+            this.age = null;
+            this.savedData.civil_Status = null;
+            this.contact_no = null;
+            this.home_address =  null;
+            this.BP = null;
+            this.Pressure =  null;
+            this.Weight =  null;
+            this.savedData.sym_fever = null;
+            this.savedData.has_cough = null;
+            this.savedData.has_sorethroat = null;
+            this.savedData.has_shortnessBreath = null;
+            this.savedData.has_influenza_Symptoms = null;
+            this.savedData.has_history_Covid =  null;
+            this.savedData.have_localTransimission =  null;
+            this.savedData.have_contact_recentTravel = null;
+            this.savedData.has_inluenza_illness = null;
+            this.savedData.has_contactConfirm = null;
+            this.savedData.took_antipyretics = null;
+            this.savedData.gender = null;
+            this.savedData.medicine = null;
+            this.savedData.existingConditions = null;
+            this.savedData.admissionDate = null;
+            this.savedData.admitted_conditions = null;
+            this.savedData.historyICU = null;
+
+
+            
+
+
+
         })
         .catch(err => {
             console.error("Error:", err);

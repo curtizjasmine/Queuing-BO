@@ -530,16 +530,46 @@ if ($full_name !== 'Guest User') {
 </div>
 
                             
-                            <div class="subsection-header">C. Medication Intake</div>
-                            <div class="checklist-item" style="flex-direction: column; align-items: flex-start;">
-                                <span class="checklist-question" style="margin-bottom: 8px;">Did you take any Antipyretics/Pain Killers?</span>
-                                <div class="radio-group" style="flex-wrap: wrap;">
-                                    <label class="radio-label"><input type="checkbox" name="meds" value="paracetamol"  v-model="savedData. medicine"> Paracetamol</label>
-                                    <label class="radio-label"><input type="checkbox" name="meds" value="ibuprofen" v-model="savedData. medicine"> Ibuprofen</label>
-                                     <label class="radio-label"><input type="checkbox" name="meds" value="naproxen" v-model="savedData. medicine"> Naproxen</label>
-                                    <input type="text" class="inline-input" placeholder="Others (Specify)" v-model="savedData. medicine">
-                                </div>
-                            </div>
+                       <div class="subsection-header">C. Medication Intake</div>
+<div class="checklist-item" style="flex-direction: column; align-items: flex-start;">
+    <span class="checklist-question" style="margin-bottom: 8px;">Did you take any Antipyretics/Pain Killers?</span>
+    
+    <div class="radio-group" style="flex-wrap: wrap;">
+        
+        <!-- 1. PARACETAMOL -->
+        <label class="radio-label">
+            <input type="radio" name="meds" value="Paracetamol" v-model="savedData.medicine"> 
+            Paracetamol
+        </label>
+
+        <!-- 2. IBUPROFEN -->
+        <label class="radio-label">
+            <input type="radio" name="meds" value="Ibuprofen" v-model="savedData.medicine"> 
+            Ibuprofen
+        </label>
+
+        <!-- 3. NAPROXEN -->
+        <label class="radio-label">
+            <input type="radio" name="meds" value="Naproxen" v-model="savedData.medicine"> 
+            Naproxen
+        </label>
+
+        <!-- 4. OTHERS (Specify) -->
+        <div style="display: flex; align-items: center; gap: 5px;">
+            <!-- This radio button sets the value to whatever is typed in customMedicine -->
+            <input type="radio" name="meds" :value="customMedicine" v-model="savedData.medicine">
+            
+            <!-- When you type here, it updates customMedicine. 
+                 If the radio is selected, savedData.medicine updates automatically. -->
+            <input type="text" 
+                   class="inline-input" 
+                   placeholder="Others (Specify)" 
+                   v-model="customMedicine"
+                   @input="savedData.medicine = customMedicine">
+        </div>
+
+    </div>
+</div>
 
                             <div class="subsection-header">D. Medical History</div>
                             <div class="checklist-item" style="flex-direction: column; align-items: flex-start;" >

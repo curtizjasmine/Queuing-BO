@@ -77,7 +77,8 @@ public static function doupdatePatientss($conn, $id, $newStatus) {
 }
 // public static function doupdatePatients($conn, $id, $fname, $lname, $mname, $age,$civil_Status, $contact_no, $home_address, $BP, $users_gender, $Comp_stat) {
 public static function doupdatePatients($conn, $patient_id,$BP,$fname, $lname,$mname, $users_gender,$home_address,$age,$BOD, $Weight,$pressure,
-$civil_Status,$contact_no,$Comp_stat,$sym_fever,$has_cough,$has_sorethroat,$has_shortnessBreath,$has_influenza_Symptoms) {
+$civil_Status,$contact_no,$Comp_stat,$sym_fever,$has_cough,$has_sorethroat,$has_shortnessBreath,$has_influenza_Symptoms,$has_history_Covid,$have_localTransimission,$have_contact_recentTravel,$has_inluenza_illness,
+$has_contactConfirm, $medicine,$existingConditions,$admissionDate,$admitted_conditions,$historyICU) {
     
 //     try {
 //         $sql = "UPDATE tbl_patients 
@@ -112,20 +113,65 @@ $civil_Status,$contact_no,$Comp_stat,$sym_fever,$has_cough,$has_sorethroat,$has_
 //     }
 
     // tbl_triagescreening
-  try {
-        $sql = "INSERT INTO tbl_triagescreening 
-            (patient_id, has_fever, has_cough, has_sorethroat, has_shortnessBreath, 
-             has_influenza,has_covid19,has_localtransmission,has_contactinfected_areas,have_influenza,have_directcontact) 
-            VALUES (?, ?, ?, ?, ?,?)";
+try {
+
+     $sql = "UPDATE tbl_patients 
+                SET BP = ?,
+                    firstname = ?,
+                    lastname = ?,
+                    middlename = ?,
+                    home_address = ?,
+                    age = ?,
+                    BOD = ?,
+                    status_patients = ?,
+                    pressure = ?,
+                    civil_status = ?,
+                    weight = ?,
+                    gender = ?,
+                    contact_no = ?,
+                    ticket_finished = DATE_FORMAT(NOW(), '%h:%i %p') 
+                WHERE patient_id = ?";
+
+        $stmt = $conn->prepare($sql);
+
+        $stmt->execute([$BP,$fname, $lname,$mname,$home_address,$age,$BOD,$Comp_stat, $pressure,$civil_Status,$Weight,
+ $users_gender,$contact_no,$patient_id,
+        ]);
+        
+
+        return $stmt->rowCount() > 0;
+    // You listed 16 columns here
+    $sql = "INSERT INTO tbl_triagescreening 
+        (patient_id, has_fever, has_cough, has_sorethroat, has_shortnessBreath, 
+         has_influenza, has_covid19, has_localtransmission, has_contactinfected_areas, 
+         have_influenza, have_directcontact, took_antipyretics, have_existingConditions, 
+         have_dateadmission, have_admitted, have_historyICU) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Fixed: Added the 16th '?'
 
     $stmt = $conn->prepare($sql);
     
+    // You have 16 variables here
     $stmt->execute([
-        $patient_id,$sym_fever, $has_cough, $has_sorethroat, $has_shortnessBreath,
-        $has_influenza_Symptoms
+        $patient_id, 
+        $sym_fever, 
+        $has_cough, 
+        $has_sorethroat, 
+        $has_shortnessBreath,
+        $has_influenza_Symptoms, 
+        $has_history_Covid, 
+        $have_localTransimission, 
+        $have_contact_recentTravel, 
+        $has_inluenza_illness, 
+        $has_contactConfirm,
+        $medicine, 
+        $existingConditions, 
+        $admissionDate, 
+        $admitted_conditions, 
+        $historyICU
     ]);
     
-    echo "Record inserted successfully!";
+    echo "Record inserted successfully";
+
 } catch(PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
