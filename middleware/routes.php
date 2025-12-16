@@ -51,22 +51,24 @@ if (isset($_POST['choice'])) {
         $BP = $_POST['BP'];
         $pressure = $_POST['Pressure'];
         $Weight = $_POST['Weight']; // Fixed key name (removed space)
-        // $sym_fever = $_POST['sym_fever'];
-        // $has_cough = $_POST['has_cough'];
-        // $has_sorethroat = $_POST['has_sorethroat'];
-        // $has_shortnessBreath = $_POST['has_shortnessBreath'];
-        // $has_influenza_Symptoms = $_POST['has_influenza_Symptoms'];
-        // $has_history_Covid = $_POST['has_history_Covid'];
-        // $have_localTransimission = $_POST['have_localTransimission'];
-        // $have_contact_recentTravel = $_POST['have_contact_recentTravel'];
-        // $has_inluenza_illness = $_POST['has_inluenza_illness'];
-        // $has_contactConfirm = $_POST['has_contactConfirm'];
+        $sym_fever = $_POST['sym_fever'];
+        $has_cough = $_POST['has_cough'];
+        $has_sorethroat = $_POST['has_sorethroat'];
+        $has_shortnessBreath = $_POST['has_shortnessBreath'];
+        $has_influenza_Symptoms = $_POST['has_influenza_Symptoms'];
+
+        $has_history_Covid = $_POST['has_history_Covid'];
+        $have_localTransimission = $_POST['have_localTransimission'];
+        $have_contact_recentTravel = $_POST['have_contact_recentTravel'];
+        $has_inluenza_illness = $_POST['has_inluenza_illness'];
+        $has_contactConfirm = $_POST['has_contactConfirm'];
+
         $user_gender = $_POST['gender'];
-        // $medicine = $_POST['medicine'];
-        // $existingConditions = $_POST['existingConditions'];
-        // $admissionDate = $_POST['admissionDate'];
-        // $admitted_conditions = $_POST['admitted_conditions'];
-        // $historyICU = $_POST['historyICU'];
+        $medicine = $_POST['medicine'];
+        $existingConditions = $_POST['existingConditions'];
+        $admissionDate = $_POST['admissionDate'];
+        $admitted_conditions = $_POST['admitted_conditions'];
+        $historyICU = $_POST['historyICU'];
         // $took_antipyretics = $_POST['took_antipyretics'];
 
         // Uncomment your logic here
@@ -92,6 +94,20 @@ if (isset($_POST['choice'])) {
               $Weight,
             $civil_Status, 
             $contact_no, 
+
+             $sym_fever,
+             $has_cough,
+             $has_sorethroat,
+             $has_shortnessBreath,
+             $has_influenza_Symptoms,
+             $has_history_Covid,
+              $have_localTransimission,
+               $have_contact_recentTravel,
+               $has_inluenza_illness,
+                $has_contactConfirm
+
+
+
         );
        
     } else {

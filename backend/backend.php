@@ -23,11 +23,13 @@ class login extends database {
     private $has_sorethroat = '';
     private $has_shortnessBreath = '';
     private $has_influenza_Symptoms = '';
+
     private $has_history_Covid = '';
     private $have_localTransimission = '';
     private $have_contact_recentTravel = '';
     private $has_inluenza_illness = '';
     private $has_contactConfirm = '';
+    
     private  $users_gender = '';
     private $medicine = '';
     private $existingConditions = '';
@@ -56,7 +58,18 @@ class login extends database {
              $pressure,
              $Weight,
             $civil_Status, 
-            $contact_no, ){
+              $contact_no,
+              $sym_fever,
+             $has_cough,
+             $has_sorethroat,
+             $has_shortnessBreath,
+             $has_influenza_Symptoms,
+              $has_history_Covid,
+              $have_localTransimission,
+               $have_contact_recentTravel,
+               $has_inluenza_illness,
+                $has_contactConfirm
+             ){
     
            $this->BP = $BP;
     // public function completedTickets($id,$fname,$lname,$mname,$BOD,$age,$civil_Status,$contact_no,$home_address,$user_gender,$BP){
@@ -72,7 +85,17 @@ class login extends database {
            $this->pressure = $pressure;
            $this->civil_Status =  $civil_Status;
            $this->contact_no = $contact_no;
+           $this->sym_fever = $sym_fever;
+           $this->has_cough = $has_cough;
+           $this->has_sorethroat = $has_sorethroat;
+           $this->  has_shortnessBreath = $has_shortnessBreath;
+           $this-> has_influenza_Symptoms = $has_influenza_Symptoms;
 
+           $this-> has_history_Covid = $has_history_Covid;
+           $this-> have_localTransimission = $have_localTransimission;
+           $this-> have_contact_recentTravel = $have_contact_recentTravel;
+           $this-> has_inluenza_illness = $has_inluenza_illness;
+           $this-> has_contactConfirm =  $has_contactConfirm;
 
         return $this->hasCompleted();
     }
@@ -85,7 +108,8 @@ class login extends database {
      private function hasCompleted(){
         $conn = $this->connect();
  $updated = PatientQuery::doupdatePatients($conn, $this->patient_id,$this->BP, $this->fname, $this->lname,$this->mname, $this->users_gender,$this->home_address, $this->age,
-$this->BOD,$this->Weight,$this->pressure,$this->civil_Status,$this->contact_no,$this->Comp_stat);
+$this->BOD,$this->Weight,$this->pressure,$this->civil_Status,$this->contact_no,$this->Comp_stat,$this->sym_fever,$this->has_cough,$this->has_sorethroat,$this->has_shortnessBreath,
+$this-> has_influenza_Symptoms);
 
         if ($updated) {
             return json_encode(["success" => true]);
