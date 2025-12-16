@@ -115,7 +115,40 @@ $has_contactConfirm, $medicine,$existingConditions,$admissionDate,$admitted_cond
     // tbl_triagescreening
 try {
 
-     $sql = "UPDATE tbl_patients 
+
+    // You listed 16 columns here
+  try {
+    $sql = "INSERT INTO tbl_triagescreening 
+        (patient_id, has_fever, has_cough, has_sorethroat, has_shortnessBreath, 
+         has_influenza, has_covid19, has_localtransmission, has_contactinfected_areas, 
+         have_influenza, have_directcontact, took_antipyretics, have_existingConditions, 
+         have_dateadmission, have_admitted, have_historyICU) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($sql);
+    
+    // Execute returns TRUE on success, FALSE on failure
+    if ($stmt->execute([
+        $patient_id, 
+        $sym_fever, 
+        $has_cough, 
+        $has_sorethroat, 
+        $has_shortnessBreath,
+        $has_influenza_Symptoms, 
+        $has_history_Covid, 
+        $have_localTransimission, 
+        $have_contact_recentTravel, 
+        $has_inluenza_illness, 
+        $has_contactConfirm,
+        $medicine, 
+        $existingConditions, 
+        $admissionDate, 
+        $admitted_conditions, 
+        $historyICU
+    ])) {
+        // --- SUCCESS BLOCK ---
+        echo "Record inserted successfully";
+            $sql = "UPDATE tbl_patients 
                 SET BP = ?,
                     firstname = ?,
                     lastname = ?,
@@ -140,37 +173,17 @@ try {
         
 
         return $stmt->rowCount() > 0;
-    // You listed 16 columns here
-    $sql = "INSERT INTO tbl_triagescreening 
-        (patient_id, has_fever, has_cough, has_sorethroat, has_shortnessBreath, 
-         has_influenza, has_covid19, has_localtransmission, has_contactinfected_areas, 
-         have_influenza, have_directcontact, took_antipyretics, have_existingConditions, 
-         have_dateadmission, have_admitted, have_historyICU) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // Fixed: Added the 16th '?'
+        
+    } else {
+        // --- FAILURE BLOCK ---
+        echo "Failed to insert record.";
+        // For debugging purposes, you can uncomment the line below to see specific SQL errors:
+        // print_r($stmt->errorInfo());
+    }
 
-    $stmt = $conn->prepare($sql);
-    
-    // You have 16 variables here
-    $stmt->execute([
-        $patient_id, 
-        $sym_fever, 
-        $has_cough, 
-        $has_sorethroat, 
-        $has_shortnessBreath,
-        $has_influenza_Symptoms, 
-        $has_history_Covid, 
-        $have_localTransimission, 
-        $have_contact_recentTravel, 
-        $has_inluenza_illness, 
-        $has_contactConfirm,
-        $medicine, 
-        $existingConditions, 
-        $admissionDate, 
-        $admitted_conditions, 
-        $historyICU
-    ]);
-    
-    echo "Record inserted successfully";
+} catch(PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
 
 } catch(PDOException $e) {
     echo "Error: " . $e->getMessage();
