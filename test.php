@@ -684,7 +684,7 @@ if ($full_name !== 'Guest User') {
 
         <!-- Corrected the label and action for the 'Done' button -->
         <button class="q-btn btn-cancel" 
-                @click="completed(selectedTicket?.patient_id)"
+                @click="completed(selectedTicket?.patient_id,selectedTicket?.checklist_id)"
                 :disabled="!selectedTicket"> 
             <i class="fas fa-check"></i> Done
         </button>

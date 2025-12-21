@@ -718,191 +718,166 @@
 
     </main>
 
-    <script>
-        // === STEPPER LOGIC ===
-        const totalSteps = 4;
+ <script>
+    // === SIMULATED DATABASE (opd_db) ===
+    const opd_db = {
+        'C-104': {
+            ticket: 'C-104',
+            triage_status: 'done', // STATUS: DONE
+            demographics: {
+                fname: 'Maria',
+                mname: 'R',
+                lname: 'Clara',
+                dob: '1995-05-20',
+                sex: 'Female',
+                civil_status: 'Single',
+                contact: '0917-123-4567',
+                address: 'Calle Real, Intramuros, Manila'
+            },
+            vitals: {
+                bp: '110/70',
+                temp: '36.8',
+                weight: '54'
+            },
+            symptoms: {
+                fever: 'no',
+                cough: 'yes'
+            },
+            notes: 'Patient complains of dry cough for 3 days. No fever.'
+        },
+        'C-105': {
+            ticket: 'C-105',
+            triage_status: 'pending', // STATUS: PENDING
+            demographics: { fname: '', lname: '' }
+        }
+    };
+
+    const totalSteps = 4;
+    
+    // Function to handle switching steps and updating the visual bar
+    function goToStep(step) {
+        // 1. Hide all panes
+        document.querySelectorAll('.step-pane').forEach(el => el.classList.remove('active-pane'));
         
-        function goToStep(step) {
-            // 1. Hide all panes
-            document.querySelectorAll('.step-pane').forEach(el => el.classList.remove('active-pane'));
-            // 2. Show target pane
-            document.getElementById('pane-' + step).classList.add('active-pane');
+        // 2. Show the target pane
+        document.getElementById('pane-' + step).classList.add('active-pane');
+        
+        // 3. Update the Visual Stepper (The circles and lines)
+        updateStepperVisuals(step);
+    }
 
-            // 3. Update Visual Stepper
-            updateStepperVisuals(step);
-        }
+    function updateStepperVisuals(currentStep) {
+        // Calculate progress line width
+        const percent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        document.getElementById('progressFill').style.width = percent + '%';
 
-        function updateStepperVisuals(currentStep) {
-            // Update line fill width (Steps: 1=0%, 2=33%, 3=66%, 4=100%)
-            const percent = ((currentStep - 1) / (totalSteps - 1)) * 100;
-            document.getElementById('progressFill').style.width = percent + '%';
-
-            for(let i = 1; i <= totalSteps; i++) {
-                const node = document.getElementById('step-node-' + i);
-                const circle = node.querySelector('.step-circle');
-                
-                // Reset classes
-                node.classList.remove('active', 'completed');
-                
-                if (i < currentStep) {
-                    // Previous steps -> Completed (Checkmark)
-                    node.classList.add('completed');
-                    circle.innerHTML = '<i class="fas fa-check"></i>';
-                } else if (i === currentStep) {
-                    // Current step -> Active
-                    node.classList.add('active');
-                    // Restore original icon
-                    const icons = ['fa-notes-medical', 'fa-user', 'fa-credit-card', 'fa-user-md'];
-                    circle.innerHTML = `<i class="fas ${icons[i-1]}"></i>`;
-                } else {
-                    // Future steps -> Inactive
-                    const icons = ['fa-notes-medical', 'fa-user', 'fa-credit-card', 'fa-user-md'];
-                    circle.innerHTML = `<i class="fas ${icons[i-1]}"></i>`;
-                }
-            }
-        }
-
-        // === UPDATED DATA ===
-        const database = {
-            'completed': [
-                { token: 'C-099', name: 'Emilio Aguinaldo', address: 'Kawit, Cavite', timeGen: '09:50 AM', timeFin: '10:10 AM', status: 'Completed', bp: '120/80', temp: '36.5', weight: '70' },
-                { token: 'C-100', name: 'Apolinario Mabini', address: 'Tanauan, Batangas', timeGen: '10:05 AM', timeFin: '10:25 AM', status: 'Completed', bp: '130/85', temp: '36.8', weight: '62' },
-            ],
-            'pending': [
-                { token: 'C-104', name: 'Maria Clara', address: 'San Diego, Laguna', timeGen: '10:55 AM', timeFin: '-', status: 'Pending' },
-                { token: 'C-105', name: 'Jose Rizal', address: 'Calamba, Laguna', timeGen: '11:03 AM', timeFin: '-', status: 'Pending' },
-                { token: 'C-106', name: 'Andres Bonifacio', address: 'Tondo, Manila', timeGen: '11:09 AM', timeFin: '-', status: 'Pending' },
-            ],
-            'skipped': [
-                { token: 'C-102', name: 'Melchora Aquino', address: 'Caloocan City', timeGen: '10:30 AM', timeFin: '10:45 AM', status: 'Skipped', bp: '140/90', temp: '37.2', weight: '60', remarks: 'Patient not responding' },
-            ],
-            'cancelled': [
-                { token: 'C-098', name: 'Gabriela Silang', address: 'Santa, Ilocos Sur', timeGen: '09:30 AM', timeFin: '09:50 AM', status: 'Cancelled', bp: '120/80', temp: '36.6', weight: '55', remarks: 'Duplicate entry' },
-            ]
-        };
-
-        // === TAB SWITCHING LOGIC (QUEUE) ===
-        function switchQueueTab(type) {
-            const listPending = document.getElementById('list-pending');
-            const listPriority = document.getElementById('list-priority');
-            const tabPending = document.getElementById('tab-pending');
-            const tabPriority = document.getElementById('tab-priority');
-
-            if(type === 'pending') {
-                listPending.style.display = 'block';
-                listPriority.style.display = 'none';
-                tabPending.classList.add('active-tab');
-                tabPriority.classList.remove('active-tab');
+        for(let i = 1; i <= totalSteps; i++) {
+            const node = document.getElementById('step-node-' + i);
+            const circle = node.querySelector('.step-circle');
+            
+            // Reset state
+            node.classList.remove('active', 'completed');
+            
+            if (i < currentStep) {
+                // PAST STEPS: Turn into Checkmark (e.g., Triage when on Registration)
+                node.classList.add('completed');
+                circle.innerHTML = '<i class="fas fa-check"></i>';
+            } else if (i === currentStep) {
+                // CURRENT STEP: Highlight with Halo
+                node.classList.add('active');
+                // Restore icon based on step index
+                const icons = ['fa-notes-medical', 'fa-user', 'fa-credit-card', 'fa-user-md'];
+                circle.innerHTML = `<i class="fas ${icons[i-1]}"></i>`;
             } else {
-                listPending.style.display = 'none';
-                listPriority.style.display = 'block';
-                tabPriority.classList.add('active-tab');
-                tabPending.classList.remove('active-tab');
+                // FUTURE STEPS
+                const icons = ['fa-notes-medical', 'fa-user', 'fa-credit-card', 'fa-user-md'];
+                circle.innerHTML = `<i class="fas ${icons[i-1]}"></i>`;
             }
         }
+    }
 
-        // === MODAL LOGIC ===
-        let currentModalAction = '';
-        function openActionModal(action) {
-            const ticket = document.getElementById('currentTicket').innerText;
-            const modal = document.getElementById('actionModal');
-            const titleEl = document.getElementById('modalTitle');
-            const btn = document.getElementById('modalConfirmBtn');
-            const remarks = document.getElementById('modalRemarks');
-            
-            remarks.value = '';
-            document.getElementById('modalTicketId').innerText = ticket;
-            currentModalAction = action;
-
-            if(action === 'skip') {
-                titleEl.innerHTML = '<i class="fas fa-forward" style="color:var(--warning)"></i> Skip Patient';
-                btn.style.backgroundColor = 'var(--warning)';
-                btn.innerText = 'Confirm Skip';
-            } else if (action === 'cancel') {
-                titleEl.innerHTML = '<i class="fas fa-ban" style="color:var(--danger)"></i> Cancel Ticket';
-                btn.style.backgroundColor = 'var(--danger)';
-                btn.innerText = 'Confirm Cancel';
-            }
-            modal.style.display = 'flex';
-        }
-
-        function closeModal() { document.getElementById('actionModal').style.display = 'none'; }
-
-        function confirmModalAction() {
-            const remarks = document.getElementById('modalRemarks').value;
-            if(remarks.trim() === "") { alert("Please enter a remark or reason."); return; }
-            alert(`Confirmed: ${currentModalAction.toUpperCase()}`);
-            closeModal();
-            const activeItem = document.querySelector('.queue-item.active');
-            if(activeItem) activeItem.remove();
-        }
-
-        // === TABLE LOGIC ===
-        function loadTable(category) {
-            document.getElementById('view-dashboard').style.display = 'none';
-            document.getElementById('view-table').style.display = 'block';
-            document.getElementById('nav-triage').classList.remove('active');
-            
-            const titles = { 'completed': 'Completed Tickets', 'pending': 'Pending Queue', 'skipped': 'Skipped Patients', 'cancelled': 'Cancelled Tickets' };
-            document.getElementById('tableTitle').innerText = titles[category];
-
-            const thead = document.getElementById('tableHead');
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            
-            let headers = category === 'pending' ? 
-                `<tr><th>Token</th><th>Name</th><th>Address</th><th>Time</th><th>Status</th></tr>` :
-                `<tr><th>Token</th><th>Name</th><th>Address</th><th>Time</th><th>Details</th><th>Status</th></tr>`;
-            thead.innerHTML = headers;
-
-            const data = database[category] || [];
-            if(data.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No records.</td></tr>'; return; }
-
-            data.forEach(row => {
-                let tr = `<tr><td><strong>${row.token}</strong></td><td>${row.name}</td><td>${row.address}</td><td>${row.timeGen}</td>`;
-                if(category !== 'pending') tr += `<td>${row.bp ? row.bp : '-'}</td>`;
-                tr += `<td><span class="status-badge badge-${category}">${row.status}</span></td></tr>`;
-                tbody.innerHTML += tr;
-            });
-        }
-
-        // === GENERAL FUNCTIONS ===
-        function showDashboard() {
-            document.getElementById('view-dashboard').style.display = 'block';
-            document.getElementById('view-table').style.display = 'none';
-            document.getElementById('nav-triage').classList.add('active');
-        }
-
-        function toggleDropdown() { document.getElementById('ticketDropdown').classList.toggle('show'); }
-
-        function calculateAge() {
-            const dob = new Date(document.getElementById('dob').value);
-            const today = new Date();
-            let age = today.getFullYear() - dob.getFullYear();
-            if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) age--;
-            document.getElementById('age').value = age;
-        }
-
-        function selectPatient(element, ticketId, name) {
-            document.querySelectorAll('.queue-item').forEach(i => i.classList.remove('active'));
-            element.classList.add('active');
-            document.getElementById('currentTicket').innerText = ticketId;
-            // Clear inputs and reset to Step 1
-            document.querySelectorAll('input, textarea').forEach(i => i.value = '');
-            goToStep(1);
-        }
-
-        function submitCompleteWorkflow() {
-            const ticket = document.getElementById('currentTicket').innerText;
-            if(confirm(`Complete entire workflow for ticket ${ticket}?`)) {
-                alert("Patient cycle completed successfully.");
-                const activeItem = document.querySelector('.queue-item.active');
-                if(activeItem) activeItem.remove();
-                goToStep(1);
-            }
-        }
+    // === MAIN LOGIC: SELECT PATIENT ===
+    function selectPatient(element, ticketId) {
+        // 1. Highlight the selected patient in the list
+        document.querySelectorAll('.queue-item').forEach(i => i.classList.remove('active'));
+        element.classList.add('active');
+        document.getElementById('currentTicket').innerText = ticketId;
         
-        function queueAction(type) { if(type) alert(type + " action triggered."); }
-    </script>
+        // 2. Look up data in the "Database"
+        const data = opd_db[ticketId];
+
+        if(data && data.triage_status === 'done') {
+            // CASE A: TRIAGE IS DONE
+            // 1. Fill the data so it's ready in the background
+            fillTriageData(data);
+            
+            // 2. SKIP Triage Step -> Jump straight to Registration (Step 2)
+            goToStep(2); 
+
+            // 3. Show badge
+            document.getElementById('statusBadgeContainer').innerHTML = `
+                <span style="background:#d1fae5; color:#047857; padding:6px 12px; border-radius:20px; font-size:0.85rem; font-weight:bold; display:flex; align-items:center; gap:5px;">
+                    <i class="fas fa-check-circle"></i> <span>Triage Completed</span>
+                </span>`;
+                
+        } else {
+            // CASE B: NEW PATIENT (Triage Pending)
+            // 1. Clear form for new entry
+            clearForm();
+            
+            // 2. Start at Triage (Step 1)
+            goToStep(1);
+            
+            // 3. Show badge
+            document.getElementById('statusBadgeContainer').innerHTML = `
+                <span style="background:#fee2e2; color:#b91c1c; padding:6px 12px; border-radius:20px; font-size:0.85rem; font-weight:bold; display:flex; align-items:center; gap:5px;">
+                    <i class="fas fa-pen"></i> <span>Awaiting Triage</span>
+                </span>`;
+        }
+    }
+
+    // Helper: Fill inputs with data
+    function fillTriageData(data) {
+        // Triage Form Inputs
+        document.getElementById('fname').value = data.demographics.fname;
+        document.getElementById('mname').value = data.demographics.mname;
+        document.getElementById('lname').value = data.demographics.lname;
+        document.getElementById('dob').value = data.demographics.dob;
+        document.getElementById('sex').value = data.demographics.sex;
+        
+        // Vitals
+        document.getElementById('vs_bp').value = data.vitals.bp;
+        document.getElementById('vs_temp').value = data.vitals.temp;
+        document.getElementById('vs_weight').value = data.vitals.weight;
+        
+        // Also populate Step 2 (Registration) fields immediately
+        document.getElementById('reg_fname').value = data.demographics.fname;
+        document.getElementById('reg_lname').value = data.demographics.lname;
+        
+        calculateAge(); // Update age calc
+        document.getElementById('triage_notes').value = data.notes;
+    }
+
+    function clearForm() {
+        document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+        document.getElementById('sex').selectedIndex = 0;
+    }
+
+    function calculateAge() {
+        const val = document.getElementById('dob').value;
+        if(!val) return;
+        const dob = new Date(val);
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) age--;
+        document.getElementById('age').value = age;
+        document.getElementById('reg_age').value = age;
+    }
+
+    function showDashboard() {
+        document.getElementById('view-dashboard').style.display = 'block';
+        document.getElementById('view-table').style.display = 'none';
+    }
+</script>
 </body>
 </html>

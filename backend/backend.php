@@ -39,6 +39,7 @@ class login extends database {
     private $took_antipyretics = '';
     private $remarks = '';
     private $status = '';
+    private  $checkLists = '';
     
     public function getpendingTickets() {
         return $this->doDisplaypendingTickets();
@@ -73,7 +74,8 @@ class login extends database {
                   $existingConditions,
                   $admissionDate,
                   $admitted_conditions,
-                  $historyICU
+                  $historyICU,
+                  $checkList
              ){
     
            $this->BP = $BP;
@@ -107,6 +109,7 @@ class login extends database {
            $this-> admissionDate =  $admissionDate;
            $this-> admitted_conditions = $admitted_conditions;
            $this-> historyICU =  $historyICU;
+           $this->checkLists = $checkList;
 
 
 
@@ -123,7 +126,7 @@ class login extends database {
  $updated = PatientQuery::doupdatePatients($conn, $this->patient_id,$this->BP, $this->fname, $this->lname,$this->mname, $this->users_gender,$this->home_address, $this->age,
 $this->BOD,$this->Weight,$this->pressure,$this->civil_Status,$this->contact_no,$this->Comp_stat,$this->sym_fever,$this->has_cough,$this->has_sorethroat,$this->has_shortnessBreath,
 $this-> has_influenza_Symptoms,$this->has_history_Covid, $this-> have_localTransimission, $this-> have_contact_recentTravel,$this->  has_inluenza_illness,$this->has_contactConfirm,
-$this-> medicine,$this-> existingConditions,$this-> admissionDate,$this-> admitted_conditions,$this-> historyICU);
+$this-> medicine,$this-> existingConditions,$this-> admissionDate,$this-> admitted_conditions,$this-> historyICU,$this->checkLists);
 
         if ($updated) {
             return json_encode(["success" => true]);

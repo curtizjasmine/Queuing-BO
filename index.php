@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['username'], $_POST['p
             header("Location: test.php");
             exit;
         } elseif ($job_assign === 'Registration') {
-            header("Location: test.php");
+            header("Location: registration_dashboard.php");
             exit;
         } else {
             // Handle case where user role is 'user' but job assignment is not recognized

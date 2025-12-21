@@ -181,7 +181,7 @@ const app = Vue.createApp({
              console.log(this.savedData.civil_Status);
              
         },
-completed(id) {
+completed(id,checklistid) {
     // Safety check to ensure savedData exists before accessing properties
     if (!this.savedData) {
         console.error("Error: savedData is missing");
@@ -219,7 +219,7 @@ completed(id) {
     data.append("admissionDate", this.savedData.admissionDate || "");
     data.append("admitted_conditions", this.savedData.admitted_conditions || "");
     data.append("historyICU", this.savedData.historyICU || "");
-
+    data.append('checkList', checklistid || "");
     axios.post('./middleware/routes.php', data)
         .then(res => {
             console.log("Server Response:", res.data); // Debugging

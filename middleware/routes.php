@@ -69,6 +69,7 @@ if (isset($_POST['choice'])) {
         $admissionDate = $_POST['admissionDate'];
         $admitted_conditions = $_POST['admitted_conditions'];
         $historyICU = $_POST['historyICU'];
+        $checkList = $_POST['checkList'];
         // $took_antipyretics = $_POST['took_antipyretics'];
 
         // Uncomment your logic here
@@ -111,8 +112,8 @@ if (isset($_POST['choice'])) {
                  $existingConditions,
                  $admissionDate,
                  $admitted_conditions,
-                 $historyICU
-
+                 $historyICU,
+                  $checkList
 
 
         );
