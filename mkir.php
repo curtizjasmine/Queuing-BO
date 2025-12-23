@@ -264,22 +264,22 @@ if ($full_name !== 'Guest User') {
                             <div class="screening-question">5. Sore Throat / Throat Pain? <div class="radio-group"><input type="text" class="form-input" v-model="has_sorethroat"></div></div>
                             
                             <div class="triage-section-header">B. Exposure History</div>
-                            <div class="screening-question">1. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" ></div></div>
-                            <div class="screening-question">2. Travel/Residence in area with local transmission? <div class="radio-group"><input type="text" class="form-input" ></div></div>
-                            <div class="screening-question">3. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" ></div></div>
-                            <div class="screening-question">4. Travel/Residence in area with local transmission? <div class="radio-group"><input type="text" class="form-input" ></div></div>
-                            <div class="screening-question">5. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" ></div></div>
+                            <div class="screening-question">1. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" v-model="has_history_Covid"></div></div>
+                            <div class="screening-question">2. Travel/Residence in area with local transmission? <div class="radio-group"><input type="text" class="form-input" v-model="have_localTransimission"></div></div>
+                            <div class="screening-question">3. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" v-model="have_contact_recentTravel"></div></div>
+                            <div class="screening-question">4. Travel/Residence in area with local transmission? <div class="radio-group"><input type="text" class="form-input"  v-model="has_inluenza_illness"></div></div>
+                            <div class="screening-question">5. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" v-model="has_contactConfirm"></div></div>
              
                             <div class="triage-section-header">C. Medication Intake</div>
                             <div style="padding: 10px;"><label class="form-label">Did you take any Antipyretics/Pain Killers?</label>
-                                <div class="radio-group" style="margin-top: 10px;"><input type="text" class="form-input" ></div>
+                                <div class="radio-group" style="margin-top: 10px;"><input type="text" class="form-input" v-model="medicine"></div>
                             </div>
 
                             <div class="triage-section-header">D. Medical History</div>
-                            <div style="margin-bottom: 15px;"><label class="form-label">1. List Pre-existing conditions:</label><input type="text" class="form-input" placeholder="e.g., Hypertension, Diabetes..."></div>
-                            <div style="margin-bottom: 15px;"><label class="form-label">2. List Pre-existing conditions:</label><input type="text" class="form-input" placeholder="e.g., Hypertension, Diabetes..."></div>
-                            <div class="screening-question">1. Were you admitted recently? <div class="radio-group"><input type="text" class="form-input" ></div></div>
-                             <div class="screening-question">2. Were you admitted recently? <div class="radio-group"><input type="text" class="form-input" ></div></div>
+                            <div style="margin-bottom: 15px;"><label class="form-label">1. List Pre-existing conditions:</label><input type="text" class="form-input" placeholder="e.g., Hypertension, Diabetes..." v-model="existingConditions"></div>
+                            <div style="margin-bottom: 15px;"><label class="form-label">2. List Pre-existing conditions:</label><input type="text" class="form-input" placeholder="e.g., Hypertension, Diabetes..." v-model="admissionDate"></div>
+                            <div class="screening-question">1. Were you admitted recently? <div class="radio-group"><input type="text" class="form-input" v-model="admitted_conditions"></div></div>
+                             <div class="screening-question">2. Were you admitted recently? <div class="radio-group"><input type="text" class="form-input"  v-model="historyICU"></div></div>
 
                             <div style="margin-top: 20px;"><label class="form-label">Additional Triage Notes / Chief Complaint</label><textarea class="form-input" style="height: 100px; resize: none;" placeholder="Patient complains of..."></textarea></div>
 

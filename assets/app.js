@@ -211,16 +211,19 @@ const app = Vue.createApp({
            this.has_shortnessBreath = user.has_shortnessBreath
            this.has_influenza_Symptoms = user.has_influenza_Symptoms
 
-           this.has_history_Covid = user.has_history_Covid
-           this.have_localTransimission = user.have_localTransimission
+           this.has_history_Covid = user.has_covid19
+           this.have_localTransimission = user.has_localtransmission
             this. have_contact_recentTravel =  user.has_contactinfected_areas	
              this.has_inluenza_illness =  user.have_influenza
              this. has_contactConfirm = user.have_directcontact
-           
+
+             this. medicine = user.took_antipyretics
+             this.existingConditions = user.have_existingConditions
+             this.admissionDate = user.have_dateadmission
+             this.admitted_conditions = user.have_admitted
+             this.historyICU = user.have_historyICU
           
-            //   medicine:  null,
-            //  existingConditions: null,
-            //  admissionDate: null,
+       
             //  admitted_conditions: null,
             //  historyICU: null,
             //  took_antipyretics: null,
