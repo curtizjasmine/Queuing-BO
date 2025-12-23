@@ -29,6 +29,7 @@ const app = Vue.createApp({
             Pressure:  null,
             Weight:  null,
             has_fever: null,
+            client_id: null,
  
               savedData: {
             sym_fever: null,
@@ -140,7 +141,8 @@ const app = Vue.createApp({
                     alert("An error occurred while saving.");
                 });
         },
-
+         
+       
         // =========== API CALLS ===========
         display() {
             // This is now called by onmessage (WebSocket) or initial load
@@ -158,6 +160,7 @@ const app = Vue.createApp({
        
         callnumber(id, ticket) {
             let x = this;
+            x.client_id = id;
             x.ticketid = ticket; 
             const data = new FormData();
             data.append("choice", "do_displayTv");
@@ -166,6 +169,7 @@ const app = Vue.createApp({
             axios.post('./middleware/routes.php', data)
                 .then(res => {
                     this.pendingTickets = Array.isArray(res.data) ? res.data : [];
+                    console.log(this.pendingTickets );
                     
                     // 🟢 REALTIME: Send Call Signal
                     this.broadcastUpdate('call', {
@@ -175,7 +179,62 @@ const app = Vue.createApp({
                     });
                 })
                 .catch(err => { console.error("Error:", err); });
+                this. get_userDetails()
         },
+
+ get_userDetails() {
+    if (!this.client_id) return;
+
+    const data = new FormData();
+    data.append("choice", "get_userDetails");
+    data.append("patient_id", this.client_id);
+
+    axios.post('./middleware/routes.php', data)
+        .then(res => {
+            const user = res.data;
+
+            this.fname = user.firstname;
+            this.lname = user.lastname;
+            this.mname = user.middlename;
+            this.age = user.age;
+             this.BOD = user.BOD;
+         this.civil_Status = user.civil_status
+           this.gender = user.gender
+           this.contact_no = user.contact_no
+           this.home_address = user.home_address
+           this.Pressure = user.pressure
+           this.BP = user.BP
+           this.Weight = user.weight
+           this.sym_fever = user.has_fever
+           this.has_cough = user.has_cough
+           this.has_sorethroat = user.has_sorethroat
+           this.has_shortnessBreath = user.has_shortnessBreath
+           this.has_influenza_Symptoms = user.has_influenza_Symptoms
+
+           this.has_history_Covid = user.has_history_Covid
+           this.have_localTransimission = user.have_localTransimission
+            this. have_contact_recentTravel =  user.has_contactinfected_areas	
+             this.has_inluenza_illness =  user.have_influenza
+             this. has_contactConfirm = user.have_directcontact
+           
+          
+            //   medicine:  null,
+            //  existingConditions: null,
+            //  admissionDate: null,
+            //  admitted_conditions: null,
+            //  historyICU: null,
+            //  took_antipyretics: null,
+
+            console.log("✅ User details loaded via WebSocket");
+        })
+        .catch(err => {
+            console.error("Error loading user details:", err);
+        });
+},
+
+      
+        
+       
         
         savedsData(){
              console.log(this.savedData.civil_Status);

@@ -121,6 +121,23 @@ class login extends database {
         $this->status = $stat;
         return $this->hasDoSkipped();
     }
+
+    public function getUserpending($id){
+         $this->patient_id = $id; 
+         return $this->hasDisplayDetails();
+    }
+
+    private  function hasDisplayDetails(){
+           $conn = $this->connect();
+ $updated = PatientQuery::doDisplayDetails($conn, $this->patient_id);
+
+        if ($updated) {
+            return json_encode($updated);
+        } else {
+            return "404";
+        }
+    }
+
      private function hasCompleted(){
         $conn = $this->connect();
  $updated = PatientQuery::doupdatePatients($conn, $this->patient_id,$this->BP, $this->fname, $this->lname,$this->mname, $this->users_gender,$this->home_address, $this->age,

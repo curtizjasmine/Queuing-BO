@@ -233,51 +233,53 @@ if ($full_name !== 'Guest User') {
                         <div id="pane-1" class="step-pane">
                             <div class="section-title"><i class="fas fa-user"></i> Patient Demographics</div>
                             <div class="form-grid-3">
-                                <div><label class="form-label">First Name</label><input type="text" class="form-input" placeholder="Ex: Juan"></div>
-                                <div><label class="form-label">Middle Initial</label><input type="text" class="form-input" placeholder="Ex: D."></div>
-                                <div><label class="form-label">Last Name</label><input type="text" class="form-input" placeholder="Ex: Dela Cruz"></div>
+                                <div><label class="form-label">First Name</label><input type="text" class="form-input" placeholder="Ex: Juan" v-model="fname"></div>
+                                <div><label class="form-label">Middle Initial</label><input type="text" class="form-input" placeholder="Ex: D." v-model="mname"></div>
+                                <div><label class="form-label">Last Name</label><input type="text" class="form-input" placeholder="Ex: Dela Cruz" v-model="lname"></div>
                             </div>
                             <div class="form-grid-3">
-                                <div><label class="form-label">Date of Birth</label><input type="date" class="form-input"></div>
-                                <div><label class="form-label">Age</label><input type="text" class="form-input" placeholder="Age"></div>
-                                <div><label class="form-label">Sex</label><select class="form-input"><option>Male</option><option>Female</option></select></div>
+                                <div><label class="form-label">Date of Birth</label><input type="text" class="form-input" v-model="BOD"></div>
+                                <div><label class="form-label">Age</label><input type="text" class="form-input" placeholder="Age" v-model="age"></div>
+                                <div><label class="form-label">Sex</label><input type="text" class="form-input" v-model="gender"></div>
                             </div>
                             <div class="form-grid-2">
-                                <div><label class="form-label">Civil Status</label><select class="form-input"><option>Single</option><option>Married</option></select></div>
-                                <div><label class="form-label">Contact No.</label><input type="text" class="form-input" placeholder="0912-345-6789"></div>
+                                <div><label class="form-label">Civil Status</label><input type="text" class="form-input" v-model="civil_Status"></div>
+                                <div><label class="form-label">Contact No.</label><input type="text" class="form-input" placeholder="0912-345-6789" v-model="contact_no"></div>
                             </div>
-                            <div style="margin-bottom: 20px;"><label class="form-label">Complete Address</label><input type="text" class="form-input" placeholder="House No, Street, Barangay, City/Municipality"></div>
+                            <div style="margin-bottom: 20px;"><label class="form-label">Complete Address</label><input type="text" class="form-input" placeholder="House No, Street, Barangay, City/Municipality" v-model="home_address"></div>
 
                             <div class="section-title"><i class="fas fa-heartbeat"></i> Vital Signs</div>
                             <div class="form-grid-3">
-                                <div><label class="form-label">Blood Pressure</label><input type="text" class="form-input" placeholder="120/80"></div>
-                                <div><label class="form-label">Temperature (°C)</label><input type="text" class="form-input" placeholder="36.5"></div>
-                                <div><label class="form-label">Weight (kg)</label><input type="text" class="form-input" placeholder="65"></div>
+                                <div><label class="form-label">Blood Pressure</label><input type="text" class="form-input" placeholder="120/80" v-model="BP"></div>
+                                <div><label class="form-label">Temperature (°C)</label><input type="text" class="form-input" placeholder="36.5" v-model="Pressure"></div>
+                                <div><label class="form-label">Weight (kg)</label><input type="text" class="form-input" placeholder="65" v-model="Weight"></div>
                             </div>
 
                             <div class="section-title"><i class="fas fa-clipboard-list"></i> Screening: In the past 1 Week...</div>
                             <div class="triage-section-header">A. Symptoms</div>
-                            <div class="screening-question">1. Fever (Temperature > 38°C)? <div class="radio-group"><label><input type="radio" name="q1"> Yes</label><label><input type="radio" name="q1"> No</label></div></div>
-                            <div class="screening-question">2. Cough and/or Colds? <div class="radio-group"><label><input type="radio" name="q2"> Yes</label><label><input type="radio" name="q2"> No</label></div></div>
-                            <div class="screening-question">3. Sore Throat / Throat Pain? <div class="radio-group"><label><input type="radio" name="q3"> Yes</label><label><input type="radio" name="q3"> No</label></div></div>
-                             <div class="screening-question">4. Cough and/or Colds? <div class="radio-group"><label><input type="radio" name="q2"> Yes</label><label><input type="radio" name="q2"> No</label></div></div>
-                            <div class="screening-question">5. Sore Throat / Throat Pain? <div class="radio-group"><label><input type="radio" name="q3"> Yes</label><label><input type="radio" name="q3"> No</label></div></div>
+                            <div class="screening-question">1. Fever (Temperature > 38°C)? <div class="radio-group"><input type="text" class="form-input" v-model="sym_fever"></div></div>
+                            <div class="screening-question">2. Cough and/or Colds? <div class="radio-group"><input type="text" class="form-input" v-model="has_cough"></div></div>
+                            <div class="screening-question">3. Sore Throat / Throat Pain? <div class="radio-group"><input type="text" class="form-input" v-model="has_sorethroat"></div></div>
+                             <div class="screening-question">4. Cough and/or Colds? <div class="radio-group"><input type="text" class="form-input" v-model="has_shortnessBreath"></div></div>
+                            <div class="screening-question">5. Sore Throat / Throat Pain? <div class="radio-group"><input type="text" class="form-input" v-model="has_sorethroat"></div></div>
                             
                             <div class="triage-section-header">B. Exposure History</div>
-                            <div class="screening-question">1. History of confirmed COVID-19 Infection? <div class="radio-group"><label><input type="radio" name="q4"> Yes</label><label><input type="radio" name="q4"> No</label></div></div>
-                            <div class="screening-question">2. Travel/Residence in area with local transmission? <div class="radio-group"><label><input type="radio" name="q5"> Yes</label><label><input type="radio" name="q5"> No</label></div></div>
-                            <div class="screening-question">3. History of confirmed COVID-19 Infection? <div class="radio-group"><label><input type="radio" name="q4"> Yes</label><label><input type="radio" name="q4"> No</label></div></div>
-                            <div class="screening-question">4. Travel/Residence in area with local transmission? <div class="radio-group"><label><input type="radio" name="q5"> Yes</label><label><input type="radio" name="q5"> No</label></div></div>
-                            <div class="screening-question">5. History of confirmed COVID-19 Infection? <div class="radio-group"><label><input type="radio" name="q4"> Yes</label><label><input type="radio" name="q4"> No</label></div></div>
+                            <div class="screening-question">1. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" ></div></div>
+                            <div class="screening-question">2. Travel/Residence in area with local transmission? <div class="radio-group"><input type="text" class="form-input" ></div></div>
+                            <div class="screening-question">3. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" ></div></div>
+                            <div class="screening-question">4. Travel/Residence in area with local transmission? <div class="radio-group"><input type="text" class="form-input" ></div></div>
+                            <div class="screening-question">5. History of confirmed COVID-19 Infection? <div class="radio-group"><input type="text" class="form-input" ></div></div>
              
                             <div class="triage-section-header">C. Medication Intake</div>
                             <div style="padding: 10px;"><label class="form-label">Did you take any Antipyretics/Pain Killers?</label>
-                                <div class="radio-group" style="margin-top: 10px;"><label><input type="checkbox"> Paracetamol</label><label><input type="checkbox"> Ibuprofen</label><label><input type="checkbox"> Others</label></div>
+                                <div class="radio-group" style="margin-top: 10px;"><input type="text" class="form-input" ></div>
                             </div>
 
                             <div class="triage-section-header">D. Medical History</div>
                             <div style="margin-bottom: 15px;"><label class="form-label">1. List Pre-existing conditions:</label><input type="text" class="form-input" placeholder="e.g., Hypertension, Diabetes..."></div>
-                            <div class="screening-question">2. Were you admitted recently? <div class="radio-group"><label><input type="radio" name="q6"> Yes</label><label><input type="radio" name="q6"> No</label></div></div>
+                            <div style="margin-bottom: 15px;"><label class="form-label">2. List Pre-existing conditions:</label><input type="text" class="form-input" placeholder="e.g., Hypertension, Diabetes..."></div>
+                            <div class="screening-question">1. Were you admitted recently? <div class="radio-group"><input type="text" class="form-input" ></div></div>
+                             <div class="screening-question">2. Were you admitted recently? <div class="radio-group"><input type="text" class="form-input" ></div></div>
 
                             <div style="margin-top: 20px;"><label class="form-label">Additional Triage Notes / Chief Complaint</label><textarea class="form-input" style="height: 100px; resize: none;" placeholder="Patient complains of..."></textarea></div>
 
@@ -289,35 +291,31 @@ if ($full_name !== 'Guest User') {
                             <div class="section-title">Patient Registration Data</div>
                             <p style="color: var(--text-light); margin-bottom: 20px;">Review and complete demographic records.</p>
                               <div class="form-grid-3">
-                                <div><label class="form-label">First Name</label><input type="text" class="form-input" placeholder="Ex: Juan"></div>
-                                <div><label class="form-label">Middle Initial</label><input type="text" class="form-input" placeholder="Ex: D."></div>
-                                <div><label class="form-label">Last Name</label><input type="text" class="form-input" placeholder="Ex: Dela Cruz"></div>
+                                <div><label class="form-label">First Name</label><input type="text" class="form-input" placeholder="Ex: Juan" v-model="fname"></div>
+                                <div><label class="form-label">Middle Initial</label><input type="text" class="form-input" placeholder="Ex: D." v-model="lname"></div>
+                                <div><label class="form-label">Last Name</label><input type="text" class="form-input" placeholder="Ex: Dela Cruz" v-model="mname"></div>
                             </div>
                             <div class="form-grid-3">
-                                <div><label class="form-label">Date of Birth</label><input type="date" class="form-input"></div>
-                                <div><label class="form-label">Age</label><input type="text" class="form-input" placeholder="Age"></div>
-                                <div><label class="form-label">Sex</label><select class="form-input"><option>Male</option><option>Female</option></select></div>
+                                <div><label class="form-label">Date of Birth</label><input type="text" class="form-input" v-model="BOD"></div>
+                                <div><label class="form-label">Age</label><input type="text" class="form-input" placeholder="Age" v-model="age"></div>
+                                <div><label class="form-label">Sex</label><input type="text" class="form-input" placeholder="Sex" v-model="gender"></div>
                             </div>
                             <div class="form-grid-2">
-                                <div><label class="form-label">Civil Status</label><select class="form-input"><option>Single</option><option>Married</option></select></div>
-                                <div><label class="form-label">Contact No.</label><input type="text" class="form-input" placeholder="0912-345-6789"></div>
+                                <div><label class="form-label">Civil Status</label><input type="text" class="form-input" placeholder="Civil-Status" v-model="civil_Status"></div>
+                                <div><label class="form-label">Contact No.</label><input type="text" class="form-input" placeholder="0912-345-6789"  v-model="contact_no"></div>
                             </div>
-                            <div style="margin-bottom: 20px;"><label class="form-label">Complete Address</label><input type="text" class="form-input" placeholder="House No, Street, Barangay, City/Municipality"></div>
+                            <div style="margin-bottom: 20px;"><label class="form-label">Complete Address</label><input type="text" class="form-input" placeholder="House No, Street, Barangay, City/Municipality"  v-model="home_address"></div>
 
                             <div class="section-title"><i class="fas fa-heartbeat"></i> Vital Signs</div>
                             <div class="form-grid-3">
-                                <div><label class="form-label">Blood Pressure</label><input type="text" class="form-input" placeholder="120/80"></div>
-                                <div><label class="form-label">Temperature (°C)</label><input type="text" class="form-input" placeholder="36.5"></div>
-                                <div><label class="form-label">Weight (kg)</label><input type="text" class="form-input" placeholder="65"></div>
+                                <div><label class="form-label">Blood Pressure</label><input type="text" class="form-input" placeholder="120/80" v-model="BP"></div>
+                                <div><label class="form-label">Temperature (°C)</label><input type="text" class="form-input" placeholder="36.5" v-model="Pressure"></div>
+                                <div><label class="form-label">Weight (kg)</label><input type="text" class="form-input" placeholder="65" v-model = "Weight"></div>
     </div>
-                            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px;">
-                                <button onclick="goToStep(1)" style="padding: 10px 20px; border: 1px solid var(--border); background: white; border-radius: 6px;">Back</button>
-                                <button onclick="goToStep(3)" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 6px;">Next Step</button>
-                            </div>
+                            
                         </div>
 
-                        <div id="pane-3" class="step-pane"><div class="section-title">Billing & Payment</div><button onclick="goToStep(2)">Back</button></div>
-                        <div id="pane-4" class="step-pane"><div class="section-title">Doctor Consultation</div><button onclick="goToStep(3)">Back</button></div>
+                        
                     </div>
                 </div>
 
@@ -330,7 +328,15 @@ if ($full_name !== 'Guest User') {
                                 <div style="display: flex; gap: 5px;"><div class="badge badge-red">1</div><div class="badge badge-blue">12</div></div>
                             </div>
                         </div>
-                      
+                            <div class="queue-footer">
+                            <div class="btn-grid">
+                                <button class="q-btn btn-call"   @click="callnumber(selectedTicket?.patient_id,selectedTicket?.ticket)"><i class="fas fa-bullhorn"></i> Call</button>
+                                <button class="q-btn btn-skip" onclick="openModal('Skip')"><i class="fas fa-forward"></i> Skip</button>
+                                <button class="q-btn btn-cancel" onclick="openModal('Cancel')"><i class="fas fa-ban"></i> Cancel</button>
+                                <button class="q-btn btn-done" onclick="alert('Triage Done')"><i class="fas fa-check"></i> Done</button>
+                                <button class="q-btn btn-next-full" onclick="alert('Serving Next')">Next <i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
               <div v-for="(ticket, index) in pendingTickets" 
      :key="ticket.ticket_id || index"
      class="queue-item"
@@ -363,7 +369,7 @@ if ($full_name !== 'Guest User') {
           
         flexShrink: 0, /* Prevents the bar from squishing */
         backgroundColor: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '#007bff' : '#a4c6f8ff'
-    }"></div>
+    }"  ></div>
 
     <!-- Text Content Wrapper -->
     <div style="display: flex; flex-direction: column; justify-content: center;   margin-left: 30px;">
@@ -389,15 +395,8 @@ if ($full_name !== 'Guest User') {
             {{ ticket.status_patients }}
         </div>
     </div>
-</div>                <div class="queue-footer">
-                            <div class="btn-grid">
-                                <button class="q-btn btn-call"   @click="callnumber(selectedTicket?.patient_id,selectedTicket?.ticket)"><i class="fas fa-bullhorn"></i> Call</button>
-                                <button class="q-btn btn-skip" onclick="openModal('Skip')"><i class="fas fa-forward"></i> Skip</button>
-                                <button class="q-btn btn-cancel" onclick="openModal('Cancel')"><i class="fas fa-ban"></i> Cancel</button>
-                                <button class="q-btn btn-done" onclick="alert('Triage Done')"><i class="fas fa-check"></i> Done</button>
-                                <button class="q-btn btn-next-full" onclick="alert('Serving Next')">Next <i class="fas fa-chevron-right"></i></button>
-                            </div>
-                        </div>
+</div>          
+
                     </div>
                 </div>
             </div>

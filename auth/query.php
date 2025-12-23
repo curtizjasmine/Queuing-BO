@@ -49,7 +49,23 @@ WHERE c.triage = 'Done'
 }
 
 
-
+public static function doDisplayDetails($conn,$patientId) {
+try {
+    $sql = "SELECT p.*, t.*
+            FROM tbl_patients p
+            LEFT JOIN tbl_triagescreening t ON p.patient_id = t.patient_id
+            WHERE p.patient_id = ?";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$patientId]);
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+    
+} catch (PDOException $e) {
+    error_log("Database Error: " . $e->getMessage());
+    return false;
+}
+}
 
 public static function doupdatePatientss($conn, $id, $newStatus) {
     try {

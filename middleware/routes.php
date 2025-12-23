@@ -135,6 +135,13 @@ if (isset($_POST['choice'])) {
                     echo "not connected";
                 }
                 break;
+            case 'get_userDetails': 
+                 if(isset($_POST['patient_id'])){
+                    $id = $_POST['patient_id'];
+                $pending = new login();
+                 echo $pending->getUserpending($id);
+                }
+                break;
      
         
 
