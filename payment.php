@@ -1,4 +1,3 @@
-
 <?php
 // start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
@@ -117,6 +116,14 @@ if ($full_name !== 'Guest User') {
         .btn-new-patient { background: #dcfce7; color: #166534; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .btn-save-doctor { width: 100%; background: var(--success); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 1rem; }
 
+        /* --- PAYMENT SPECIFICS --- */
+        .payment-summary { background: #f0f9ff; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+        .payment-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #cbd5e1; }
+        .payment-total { display: flex; justify-content: space-between; padding: 12px 0; font-size: 1.1rem; font-weight: bold; border-top: 2px solid var(--primary); margin-top: 10px; }
+        .payment-option { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
+        .payment-option:hover { border-color: var(--primary); background: #f0f9ff; }
+        .payment-option.selected { border-color: var(--primary); background: #ccfbf1; }
+
         /* --- QUEUE COLUMN --- */
         .right-col { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
         .queue-header { padding: 20px; border-bottom: 1px solid var(--border); }
@@ -145,7 +152,20 @@ if ($full_name !== 'Guest User') {
 <body>
 
     <!-- MODAL -->
-     <aside class="sidebar">
+    <div id="actionModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2 id="modalTitle" style="margin-bottom: 15px;">Action Required</h2>
+            <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; margin-bottom: 15px; text-align: center;">Ticket: <span id="modalTicketId" style="font-weight: bold; color: var(--primary);">---</span></div>
+            <textarea class="form-input" style="height: 100px; resize: none;" placeholder="Remarks..."></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button onclick="closeModal()" style="padding: 8px 15px; border: 1px solid var(--border); background: white; border-radius: 6px;">Cancel</button>
+                <button onclick="confirmModalAction()" style="padding: 8px 15px; background: var(--primary); color: white; border: none; border-radius: 6px;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
         <div class="brand"><i class="fas fa-user-nurse"></i> MedFlow</div>
         <nav>
             <a onclick="showDashboard()" class="nav-item active" id="nav-workflow"><i class="fas fa-notes-medical"></i> Clinical Workflow</a>
@@ -159,31 +179,17 @@ if ($full_name !== 'Guest User') {
     </aside>
 
     <main class="main" id="app">
-                <div id="actionModal" class="modal-overlay">
-        <div class="modal-card">
-            <h2 id="modalTitle" style="margin-bottom: 15px;">Action Required</h2>
-            <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; margin-bottom: 15px; text-align: center;">Ticket: <span id="modalTicketId" style="font-weight: bold; color: var(--primary);">---</span></div>
-            <textarea class="form-input" style="height: 100px; resize: none;" placeholder="Remarks..."></textarea>
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                <button onclick="closeModal()" style="padding: 8px 15px; border: 1px solid var(--border); background: white; border-radius: 6px;">Cancel</button>
-                <button onclick="confirmModalAction()" style="padding: 8px 15px; background: var(--primary); color: white; border: none; border-radius: 6px;">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SIDEBAR -->
-
         <header>
-            <div class="station-indicator" ><i class="fas fa-clinic-medical"></i> Triage Station A</div>
+            <div class="station-indicator"><i class="fas fa-clinic-medical"></i> Triage Station A</div>
             
-            <div class="teller-info" >
+            <div class="teller-info" style="display: flex; align-items: center; gap: 15px;">
                 <div style="text-align: right;">
                     <div style="font-weight: bold; color: var(--text-dark);">
-                         <?= htmlspecialchars($full_name, ENT_QUOTES, 'UTF-8'); ?>
+                        <?= htmlspecialchars($full_name, ENT_QUOTES, 'UTF-8'); ?>
                     </div>
                     <div style="font-size: 0.8rem; color: var(--text-light);">Triage Officer</div>
                 </div>
-                <div class="teller-avatar" style="margin-left: 70px;">
+                <div class="teller-avatar">
                     <?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8'); ?>
                 </div>
             </div>
@@ -196,7 +202,7 @@ if ($full_name !== 'Guest User') {
                 <div class="left-col">
                     <div class="card" style="min-height: 100%;">
                         <div style="padding: 25px 25px 0 25px; display: flex; justify-content: space-between; align-items: center;">
-                            <h1 style="color: var(--primary); font-size: 1.6rem;" id="paneTitle">Patient Registration</h1>
+                            <h1 style="color: var(--primary); font-size: 1.6rem;" id="paneTitle">Payment & Billing</h1>
                             <div style="display: flex; gap: 10px;">
                                 <span style="background: var(--ticket-bg); color: var(--ticket-text); padding: 6px 15px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">
                                     <i class="fas fa-ticket-alt"></i> Ticket: <span id="currentTicket">C-104</span>
@@ -208,28 +214,28 @@ if ($full_name !== 'Guest User') {
                         <!-- Stepper -->
                         <div class="progressbar-wrapper">
                             <div class="progress-line-bg"></div>
-                            <div class="progress-line-fill" id="progressFill" style="width: 33.33%;"></div>
+                            <div class="progress-line-fill" id="progressFill" style="width: 66.66%;"></div>
                             <div class="progressbar">
                                 <div class="step-item completed" onclick="goToStep(1)">
                                     <div class="step-circle"><i class="fas fa-check"></i></div>
                                     <div class="step-label">Triage</div>
                                 </div>
-                                <div class="step-item active" onclick="goToStep(2)">
-                                    <div class="step-circle"><i class="fas fa-user"></i></div>
+                                <div class="step-item completed" onclick="goToStep(2)">
+                                    <div class="step-circle"><i class="fas fa-check"></i></div>
                                     <div class="step-label">Registration</div>
                                 </div>
-                                <div class="step-item" onclick="goToStep(3)"   disabled>
+                                <div class="step-item active" onclick="goToStep(3)">
                                     <div class="step-circle"><i class="fas fa-credit-card"></i></div>
                                     <div class="step-label">Payment</div>
                                 </div>
-                                <div class="step-item" onclick="goToStep(4)"  disabled>
+                                <div class="step-item" onclick="goToStep(4)">
                                     <div class="step-circle"><i class="fas fa-user-md"></i></div>
                                     <div class="step-label">Consultation</div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- PANE 1: TRIAGE FORM (Unchanged) -->
+                        <!-- PANE 1: TRIAGE FORM -->
                         <div id="pane-1" class="step-pane">
                             <div class="section-title"><i class="fas fa-user"></i> Patient Demographics</div>
                             <div class="form-grid-3">
@@ -280,12 +286,10 @@ if ($full_name !== 'Guest User') {
                             <div style="margin-bottom: 15px;"><label class="form-label">2. List Pre-existing conditions:</label><input type="text" class="form-input" placeholder="e.g., Hypertension, Diabetes..." v-model="admissionDate"></div>
                             <div class="screening-question">1. Were you admitted recently? <div class="radio-group"><input type="text" class="form-input" v-model="admitted_conditions"></div></div>
                              <div class="screening-question">2. Were you admitted recently? <div class="radio-group"><input type="text" class="form-input"  v-model="historyICU"></div></div>
-
-                       
                         </div>
 
-                        <!-- PANE 2: REGISTRATION (Active) -->
-                        <div id="pane-2" class="step-pane active-pane">
+                        <!-- PANE 2: REGISTRATION -->
+                        <div id="pane-2" class="step-pane">
                             <div class="section-title">Patient Registration Data</div>
                             <p style="color: var(--text-light); margin-bottom: 20px;">Review and complete demographic records.</p>
                               <div class="form-grid-3">
@@ -309,11 +313,36 @@ if ($full_name !== 'Guest User') {
                                 <div><label class="form-label">Blood Pressure</label><input type="text" class="form-input" placeholder="120/80" v-model="BP"></div>
                                 <div><label class="form-label">Temperature (°C)</label><input type="text" class="form-input" placeholder="36.5" v-model="Pressure"></div>
                                 <div><label class="form-label">Weight (kg)</label><input type="text" class="form-input" placeholder="65" v-model = "Weight"></div>
-    </div>
-                            
+                            </div>
                         </div>
 
-                        
+                        <!-- PANE 3: PAYMENT (ACTIVE) -->
+                        <div id="pane-3" class="step-pane active-pane">
+                            <div class="section-title"><i class="fas fa-credit-card"></i> Payment Details</div>
+                            <p style="color: var(--text-light); margin-bottom: 20px;">Complete payment for consultation services.</p>
+                            
+                            <!-- Payment Summary -->
+                            <div class="payment-summary">
+                                <h3 style="color: var(--primary); margin-bottom: 15px;">Billing Summary</h3>
+                                <div class="payment-item">
+                                    <span>Consultation Fee</span>
+                                    <span>₱500.00</span>
+                                </div>
+                            
+                            </div>
+
+    </div>
+
+                        <!-- PANE 4: CONSULTATION -->
+                        <div id="pane-4" class="step-pane">
+                            <div class="section-title"><i class="fas fa-user-md"></i> Medical Consultation</div>
+                            <p style="color: var(--text-light); margin-bottom: 20px;">Doctor's consultation area will be available after payment.</p>
+                            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; text-align: center;">
+                                <i class="fas fa-user-md" style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                                <h3 style="color: var(--primary);">Consultation Ready</h3>
+                                <p>Patient can now proceed to the doctor's consultation room.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -326,75 +355,65 @@ if ($full_name !== 'Guest User') {
                                 <div style="display: flex; gap: 5px;"><div class="badge badge-red">1</div><div class="badge badge-blue">12</div></div>
                             </div>
                         </div>
-                            <div class="queue-footer">
+                              <div class="queue-footer">
                             <div class="btn-grid">
-                                <button class="q-btn btn-call"   @click="callnumber(selectedTicket?.patient_id,selectedTicket?.ticket)"><i class="fas fa-bullhorn"></i> Call</button>
+                                <button class="q-btn btn-call" @click="callnumber(selectedTicket?.patient_id,selectedTicket?.ticket)"><i class="fas fa-bullhorn"></i> Call</button>
                                 <button class="q-btn btn-skip" onclick="openModal('Skip')"><i class="fas fa-forward"></i> Skip</button>
                                 <button class="q-btn btn-cancel" onclick="openModal('Cancel')"><i class="fas fa-ban"></i> Cancel</button>
-                                <button class="q-btn btn-done" onclick="alert('Triage Done')"><i class="fas fa-check"></i> Done</button>
-                                <button class="q-btn btn-next-full" onclick="alert('Serving Next')">Next <i class="fas fa-chevron-right"></i></button>
+                                <button class="q-btn btn-done" onclick="alert('Payment Done')"><i class="fas fa-check"></i> Done</button>
+                                <button class="q-btn btn-next-full" onclick="goToStep(4)">Next <i class="fas fa-chevron-right"></i></button>
                             </div>
                         </div>
-              <div v-for="(ticket, index) in pendingTickets" 
-     :key="ticket.ticket_id || index"
-     class="queue-item"
-     @click="selectTicket(ticket)" 
-     :style="{
-        display: 'flex',
-        alignItems: 'center', /* Vertically centers all children */
-        justifyContent: 'flex-start', 
-        padding: '0 15px',
-        marginBottom: '12px',
-        borderRadius: '12px',
-        cursor: 'pointer',
-        width: '220px',
-        marginLeft: '10px',
-        marginTop: '10px',
-        height: '75px',
-        transition: 'all 0.2s ease-in-out',
-        border: '1px solid',
-        backgroundColor: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '#f0f7ff' : '#ffffff',
-        borderColor: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '#007bff' : '#e0e0e0',
-        boxShadow: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '0 4px 12px rgba(0,123,255,0.15)' : '0 2px 4px rgba(0,0,0,0.05)'
-     }">
-     
-    <!-- Left Accent Indicator (Bar) - Perfectly Centered Vertically -->
-    <div :style="{
-        width: '5px',
-        height: '40px', /* Fixed height for a cleaner look */
-        borderRadius: '10px',
-       
-          
-        flexShrink: 0, /* Prevents the bar from squishing */
-        backgroundColor: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '#007bff' : '#a4c6f8ff'
-    }"  ></div>
+                        <!-- Queue Items -->
+                        <div style="flex: 1; overflow-y: auto; padding: 15px;">
+                            <div v-for="(ticket, index) in pendingTickets" 
+                                 :key="ticket.ticket_id || index"
+                                 class="queue-item"
+                                 @click="selectTicket(ticket)" 
+                                 :style="{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-start', 
+                                    padding: '0 15px',
+                                    marginBottom: '12px',
+                                    borderRadius: '12px',
+                                    cursor: 'pointer',
+                                    width: '220px',
+                                    marginLeft: '10px',
+                                    marginTop: '10px',
+                                    height: '75px',
+                                    transition: 'all 0.2s ease-in-out',
+                                    border: '1px solid',
+                                    backgroundColor: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '#f0f7ff' : '#ffffff',
+                                    borderColor: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '#007bff' : '#e0e0e0',
+                                    boxShadow: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '0 4px 12px rgba(0,123,255,0.15)' : '0 2px 4px rgba(0,0,0,0.05)'
+                                 }">
+                                 
+                                <!-- Left Accent Indicator -->
+                                <div :style="{
+                                    width: '5px',
+                                    height: '40px',
+                                    borderRadius: '10px',
+                                    flexShrink: 0,
+                                    backgroundColor: (selectedTicket && selectedTicket.patient_id === ticket.patient_id) ? '#007bff' : '#a4c6f8ff'
+                                }"></div>
 
-    <!-- Text Content Wrapper -->
-    <div style="display: flex; flex-direction: column; justify-content: center;   margin-left: 30px;">
-        <!-- Ticket Number -->
-        <div style="
-            font-size: 1.1rem; 
-            font-weight: 800; 
-            color: #1a1a1a; 
-            line-height: 1;
-            margin-bottom: 4px;
-        " >
-            {{ ticket.ticket }}
-        </div>
+                                <!-- Text Content -->
+                                <div style="display: flex; flex-direction: column; justify-content: center; margin-left: 30px;">
+                                    <!-- Ticket Number -->
+                                    <div style="font-size: 1.1rem; font-weight: 800; color: #1a1a1a; line-height: 1; margin-bottom: 4px;">
+                                        {{ ticket.ticket }}
+                                    </div>
 
-        <!-- Patient Status -->
-        <div style="
-            font-size: 0.75rem; 
-            font-weight: 600; 
-            color: #666; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        ">
-            {{ ticket.status_patients }}
-        </div>
-    </div>
-</div>          
-
+                                    <!-- Patient Status -->
+                                    <div style="font-size: 0.75rem; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        {{ ticket.status_patients }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                  
                     </div>
                 </div>
             </div>
@@ -411,24 +430,38 @@ if ($full_name !== 'Guest User') {
         
     </main>
 
-
-    
-<script src="./assets/vue.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-<script src="./assets/app.js"></script>
+    <script src="./assets/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="./assets/app.js"></script>
 
     <script>
+        // Initialize with Payment as active step
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup payment method selection
+            setupPaymentMethods();
+            
+            // Calculate change for cash payment
+            document.getElementById('amountTendered')?.addEventListener('input', function() {
+                const tendered = parseFloat(this.value) || 0;
+                const total = 2200.00;
+                const change = tendered - total;
+                document.getElementById('changeAmount').value = change >= 0 ? change.toFixed(2) : '0.00';
+            });
+        });
+
         function goToStep(step) {
             document.querySelectorAll('.step-pane').forEach(p => p.classList.remove('active-pane'));
             document.getElementById('pane-' + step).classList.add('active-pane');
             
-            const fill = ((step - 1) / 3) * 100;
-            document.getElementById('progressFill').style.width = fill + '%';
+            // Update progress bar width (3 segments between 4 steps)
+            const fillPercentage = ((step - 1) / 3) * 100;
+            document.getElementById('progressFill').style.width = fillPercentage + '%';
             
+            // Update step indicators
             const steps = document.querySelectorAll('.step-item');
             const titles = ["Triage Screening Form", "Patient Registration", "Payment & Billing", "Medical Consultation"];
-            document.getElementById('paneTitle').innerText = titles[step-1];
+            document.getElementById('paneTitle').innerText = titles[step - 1];
 
             steps.forEach((s, i) => {
                 s.classList.remove('active', 'completed');
@@ -443,6 +476,7 @@ if ($full_name !== 'Guest User') {
                     icon.className = "fas " + icons[i];
                 }
             });
+            
             document.querySelector('.left-col').scrollTop = 0;
         }
 
@@ -473,12 +507,84 @@ if ($full_name !== 'Guest User') {
 
         function openModal(action) {
             document.getElementById('modalTitle').innerText = action + " Patient";
-            document.getElementById('modalTicketId').innerText = document.getElementById('servingTicket').innerText;
+            document.getElementById('modalTicketId').innerText = document.getElementById('currentTicket').innerText;
             document.getElementById('actionModal').style.display = 'flex';
         }
-        function closeModal() { document.getElementById('actionModal').style.display = 'none'; }
-        function confirmModalAction() { alert("Action confirmed!"); closeModal(); }
-    </script>
+        
+        function closeModal() { 
+            document.getElementById('actionModal').style.display = 'none'; 
+        }
+        
+        function confirmModalAction() { 
+            alert("Action confirmed!"); 
+            closeModal(); 
+        }
 
+        function setupPaymentMethods() {
+            // Hide all payment details initially
+            document.getElementById('cashDetails').style.display = 'none';
+            document.getElementById('cardDetails').style.display = 'none';
+            document.getElementById('insuranceDetails').style.display = 'none';
+            
+            // Remove any existing selected classes
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+        }
+
+        function selectPaymentMethod(method) {
+            // Remove selected class from all options
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            event.currentTarget.classList.add('selected');
+            
+            // Hide all details
+            document.getElementById('cashDetails').style.display = 'none';
+            document.getElementById('cardDetails').style.display = 'none';
+            document.getElementById('insuranceDetails').style.display = 'none';
+            
+            // Show selected details
+            if (method === 'cash') {
+                document.getElementById('cashDetails').style.display = 'block';
+            } else if (method === 'card') {
+                document.getElementById('cardDetails').style.display = 'block';
+            } else if (method === 'insurance') {
+                document.getElementById('insuranceDetails').style.display = 'block';
+            }
+        }
+
+        function processPayment() {
+            // Check if payment method is selected
+            const selectedMethod = document.querySelector('.payment-option.selected');
+            if (!selectedMethod) {
+                alert('Please select a payment method.');
+                return;
+            }
+            
+            // Validate cash payment
+            if (selectedMethod.querySelector('i').classList.contains('fa-money-bill-wave')) {
+                const amountTendered = parseFloat(document.getElementById('amountTendered').value) || 0;
+                if (amountTendered < 2200.00) {
+                    alert('Amount tendered is insufficient. Minimum payment: ₱2,200.00');
+                    return;
+                }
+            }
+            
+            // Process payment
+            alert('Payment processed successfully! Proceeding to consultation...');
+            
+            // Save payment record (simulate)
+            const transactionId = document.querySelector('input[value*="TRX-"]').value;
+            console.log(`Payment recorded: ${transactionId}`);
+            
+            // Move to consultation step
+            setTimeout(() => {
+                goToStep(4);
+            }, 1000);
+        }
+    </script>
 </body>
 </html>

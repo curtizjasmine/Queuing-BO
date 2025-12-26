@@ -22,13 +22,13 @@
             --sidebar-width: max(300px, 30vw); 
         }
 
-        /* --- OVERLAY FOR AUTOPLAY POLICY --- */
+        /* --- OVERLAY FOR AUTOPLAY POLICY (HIDDEN BY DEFAULT) --- */
         #start-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9);
             z-index: 9999;
-            display: flex;
+            display: none; /* Hidden by default */
             justify-content: center;
             align-items: center;
             flex-direction: column;
@@ -135,11 +135,11 @@
 </head>
 <body>
 
-    <!-- CLICK TO START OVERLAY (Required for Audio/TTS to work reliably) -->
-    <div id="start-overlay" onclick="startSystem()">
+    <!-- CLICK TO START OVERLAY (Hidden by default, shows only if autostart fails) -->
+    <div id="start-overlay" onclick="forceStartSystem()">
         <h1>Queue Display</h1>
-        <p>Tap anywhere to enable Audio & Speech</p>
-        <button>START SYSTEM</button>
+        <p>Audio permission required</p>
+        <button>CLICK TO START</button>
     </div>
 
     <!-- LEFT SIDE: Counters -->
@@ -166,25 +166,70 @@
 
     <!-- RIGHT SIDE: Video Player -->
     <div class="main-display">
-        <!-- Added muted initially, will unmute if needed logic applied later -->
-        <video id="queueVideo" autoplay muted playsinline></video>
+        <video id="queueVideo" autoplay muted playsinline loop></video>
     </div>
 
     <script>
         // --- 1. SYSTEM STARTUP ---
-        function startSystem() {
-            // Remove overlay
+        async function startSystem() {
+            console.log("Starting system automatically...");
+            
+            // Hide overlay if it's visible
             document.getElementById('start-overlay').style.display = 'none';
             
-            // Try to play silent audio to unlock iOS/Android audio engine
-            const audio = new Audio('Announcement sound effect.mp3');
-            audio.play().then(() => {
-                audio.pause();
-                audio.currentTime = 0;
-            }).catch(e => console.log("Audio unlock failed", e));
+            try {
+                // Try to unlock audio by playing silent audio
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create a silent audio buffer
+                const buffer = audioContext.createBuffer(1, 1, 22050);
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                
+                // Play the silent sound
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+                source.start(0);
+                
+                // Try to unmute and play video
+                const video = document.getElementById('queueVideo');
+                if (video.muted) {
+                    video.muted = false;
+                }
+                
+                // Try to play video with sound
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Video autoplay with sound prevented, keeping muted");
+                        video.muted = true;
+                        video.play();
+                    });
+                }
+                
+                console.log("Audio context unlocked successfully");
+                audioContext.close();
+                
+            } catch (error) {
+                console.warn("Audio unlock failed, showing overlay:", error);
+                // If audio unlock fails, show the overlay for manual start
+                document.getElementById('start-overlay').style.display = 'flex';
+                document.getElementById('start-overlay').querySelector('p').textContent = 
+                    "Audio permission required. Click to enable sound.";
+            }
+        }
 
-            // Start Video Sound if needed (optional)
-            // document.getElementById('queueVideo').muted = false;
+        // Manual start fallback
+        function forceStartSystem() {
+            document.getElementById('start-overlay').style.display = 'none';
+            // Force video play
+            const video = document.getElementById('queueVideo');
+            video.play().catch(e => {
+                video.muted = true;
+                video.play();
+            });
         }
 
         // --- 2. VIDEO LOGIC ---
@@ -197,33 +242,60 @@
         const videoPlayer = document.getElementById('queueVideo');
         let currentVideoIndex = 0;
         
+        // Initialize video
         videoPlayer.src = playlist[0];
+        videoPlayer.loop = false; // We'll handle looping through playlist
+        
         videoPlayer.addEventListener('ended', () => {
             currentVideoIndex = (currentVideoIndex + 1) % playlist.length;
             videoPlayer.src = playlist[currentVideoIndex];
-            videoPlayer.play().catch(e => console.log("Video Autoplay prevented:", e));
+            videoPlayer.play().catch(e => {
+                console.log("Video autoplay prevented, retrying muted");
+                videoPlayer.muted = true;
+                videoPlayer.play();
+            });
         });
 
         // --- 3. WEBSOCKET LOGIC ---
         const announcementAudio = new Audio('Announcement sound effect.mp3'); 
+        announcementAudio.preload = 'auto';
         let conn;
 
         function connectSocket() {
+            // Replace with your WebSocket server URL
             conn = new WebSocket('ws://172.16.15.235:8080');
 
-            conn.onopen = function(e) { console.log("✅ TV Connected"); };
+            conn.onopen = function(e) { 
+                console.log("✅ TV Connected to WebSocket"); 
+            };
             
             conn.onmessage = function(e) {
                 try {
                     const data = JSON.parse(e.data);
+                    console.log("Received WebSocket data:", data);
+                    
                     if (data.type === 'call') {
                         updateDisplay(data);
                     }
-                } catch (err) { console.error("Invalid JSON:", err); }
+                    
+                    // Update all counter displays if available
+                    if (data.triage) document.getElementById('triage-display').innerText = data.triage;
+                    if (data.registration) document.getElementById('reg-display').innerText = data.registration;
+                    if (data.consultation) document.getElementById('consult-display').innerText = data.consultation;
+                } catch (err) { 
+                    console.error("Invalid JSON:", err); 
+                }
             };
 
-            conn.onclose = function(e) { setTimeout(connectSocket, 5000); };
-            conn.onerror = function(err) { conn.close(); };
+            conn.onclose = function(e) { 
+                console.log("WebSocket closed, reconnecting in 5 seconds...");
+                setTimeout(connectSocket, 5000); 
+            };
+            
+            conn.onerror = function(err) { 
+                console.error("WebSocket error:", err); 
+                conn.close(); 
+            };
         }
 
         function updateDisplay(data) {
@@ -233,11 +305,17 @@
             // 1. Update Visuals
             const displayElement = document.getElementById('main-ticket-display');
             if(displayElement) displayElement.innerText = ticketNumber;
+            
+            // Update station title
+            const stationTitle = document.getElementById('station-title');
+            if(stationTitle) stationTitle.innerText = stationName.toUpperCase();
 
             // 2. Play Audio, THEN Speak
             announcementAudio.currentTime = 0;
+            
+            // Try to play announcement sound
             const playPromise = announcementAudio.play();
-
+            
             if (playPromise !== undefined) {
                 playPromise
                 .then(() => {
@@ -247,22 +325,22 @@
                     };
                 })
                 .catch(error => {
-                    console.warn("Audio blocked. Trying to speak immediately.");
-                    // If audio fails (blocked), speak anyway
+                    console.warn("Announcement audio blocked. Trying to speak directly.");
+                    // If audio fails, speak immediately
                     speakTicket(ticketNumber, stationName);
                 });
             } else {
-                 // Fallback for older browsers
-                 announcementAudio.onended = function() {
+                // Fallback for older browsers
+                announcementAudio.onended = function() {
                     speakTicket(ticketNumber, stationName);
-                 };
+                };
             }
 
             // 3. Animation
             const card = document.getElementById('station-card');
             if(card) {
                 card.classList.remove('blink-active'); 
-                void card.offsetWidth; 
+                void card.offsetWidth; // Trigger reflow
                 card.classList.add('blink-active');
                 setTimeout(() => card.classList.remove('blink-active'), 5000);
             }
@@ -271,34 +349,106 @@
         // --- 4. ROBUST SPEECH LOGIC (FULLY KIOSK OPTIMIZED) ---
         function speakTicket(ticket, station) {
             const sentence = `Ticket number ${ticket}, please proceed to ${station}`;
+            
+            console.log("Speaking:", sentence);
 
             // CHECK: Are we running in Fully Kiosk Browser?
             if (typeof fully !== "undefined") {
                 // Use Fully Kiosk Native TTS (More reliable on Android)
-                // fully.textToSpeech(text, engine, queue)
                 try {
                     fully.textToSpeech(sentence);
                     console.log("Speaking via Fully Kiosk Native API");
+                    return;
                 } catch (e) {
                     console.error("Fully Kiosk TTS failed, falling back to Web API");
-                    fallbackSpeak(sentence);
                 }
-            } else {
-                // Not Fully Kiosk, use Standard Web API
-                fallbackSpeak(sentence);
             }
+            
+            // Fallback to Web Speech API
+            fallbackSpeak(sentence);
         }
 
         function fallbackSpeak(text) {
+            if (!window.speechSynthesis) {
+                console.error("Web Speech API not supported");
+                return;
+            }
+            
             window.speechSynthesis.cancel(); // Stop previous
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 0.9;
+            utterance.volume = 1.0;
             utterance.lang = 'en-US';
+            
+            // Try to find a good voice
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                // Prefer English voices
+                const englishVoice = voices.find(v => v.lang.startsWith('en-'));
+                if (englishVoice) utterance.voice = englishVoice;
+            }
+            
             window.speechSynthesis.speak(utterance);
         }
 
-        connectSocket();
+        // --- 5. INITIALIZATION ---
+        
+        // When page loads, auto-start everything
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM loaded, starting system...");
+            
+            // Connect WebSocket immediately
+            connectSocket();
+            
+            // Try to start video immediately
+            const video = document.getElementById('queueVideo');
+            video.play().catch(e => {
+                console.log("Video autoplay prevented initially:", e);
+                video.muted = true;
+                video.play();
+            });
+            
+            // Auto-start the system after a brief delay
+            setTimeout(() => {
+                startSystem();
+            }, 500);
+        });
 
+        // Also try on window load
+        window.addEventListener('load', () => {
+            console.log("Window fully loaded");
+        });
+
+        // Initialize voices for TTS
+        if (window.speechSynthesis) {
+            // Wait for voices to load
+            speechSynthesis.onvoiceschanged = function() {
+                console.log("Voices loaded:", speechSynthesis.getVoices().length);
+            };
+            
+            // Trigger voices loading
+            setTimeout(() => {
+                const voices = speechSynthesis.getVoices();
+                if (voices.length === 0) {
+                    console.log("No voices loaded yet, will retry...");
+                    // Some browsers need this
+                    speechSynthesis.getVoices();
+                }
+            }, 1000);
+        }
+
+        // Emergency fallback: if audio still doesn't work after 3 seconds, show overlay
+        setTimeout(() => {
+            // Check if we can play audio
+            const testAudio = new Audio();
+            testAudio.muted = true;
+            testAudio.play().then(() => {
+                console.log("Audio test passed");
+            }).catch(() => {
+                console.log("Audio test failed, showing overlay");
+                document.getElementById('start-overlay').style.display = 'flex';
+            });
+        }, 3000);
     </script>
 </body>
 </html>
