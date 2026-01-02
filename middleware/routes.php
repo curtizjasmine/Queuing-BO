@@ -142,6 +142,13 @@ if (isset($_POST['choice'])) {
                  echo $pending->getUserpending($id);
                 }
                 break;
+            case 'done_registration': 
+                if (isset($_POST['patient_id'])) {
+                    $id = $_POST['patient_id'];
+                $pending = new login();
+                 echo $pending->doDoneRegistration($id);
+                }
+                break;
      
         
 

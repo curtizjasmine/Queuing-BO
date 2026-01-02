@@ -121,6 +121,10 @@ class login extends database {
         $this->status = $stat;
         return $this->hasDoSkipped();
     }
+    public function doDoneRegistration($id){
+         $this->patient_id = $id; 
+           return $this->hasDoDoneRegistration();
+    }
 
     public function getUserpending($id){
          $this->patient_id = $id; 
@@ -138,6 +142,15 @@ class login extends database {
         }
     }
 
+    private function hasDoDoneRegistration(){
+         $conn = $this->connect();
+        $data = PatientQuery::hasDoneRegistration($conn, $this->patient_id);
+        if ($data) {
+            return json_encode($data);
+        } else {
+            return "404";
+        }
+    }
      private function hasCompleted(){
         $conn = $this->connect();
  $updated = PatientQuery::doupdatePatients($conn, $this->patient_id,$this->BP, $this->fname, $this->lname,$this->mname, $this->users_gender,$this->home_address, $this->age,

@@ -64,7 +64,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['username'], $_POST['p
         } elseif ($job_assign === 'Registration') {
             header("Location: registration_dashboard.php");
             exit;
-        } else {
+        } elseif ($job_assign === 'payment') {
+            header("Location: payment.php");
+            exit;
+        }
+        else {
             // Handle case where user role is 'user' but job assignment is not recognized
             $message = "<div class='alert alert-warning text-center'>No valid job assignment found.</div>";
         }

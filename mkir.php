@@ -329,9 +329,19 @@ if ($full_name !== 'Guest User') {
                             <div class="queue-footer">
                             <div class="btn-grid">
                                 <button class="q-btn btn-call"   @click="callnumber(selectedTicket?.patient_id,selectedTicket?.ticket)"><i class="fas fa-bullhorn"></i> Call</button>
-                                <button class="q-btn btn-skip" onclick="openModal('Skip')"><i class="fas fa-forward"></i> Skip</button>
-                                <button class="q-btn btn-cancel" onclick="openModal('Cancel')"><i class="fas fa-ban"></i> Cancel</button>
-                                <button class="q-btn btn-done" onclick="alert('Triage Done')"><i class="fas fa-check"></i> Done</button>
+                                <button class="q-btn btn-skip" 
+                 @click="openModal('skip')"
+                :disabled="!selectedTicket">
+            <i class="fas fa-forward"></i> Skip
+        </button>
+
+        <button class="q-btn btn-cancel" 
+                @click="openModal('cancel')"
+                :disabled="!selectedTicket">
+            <i class="fas fa-ban"></i> Cancel
+        </button>
+                                <button class="q-btn btn-done" @click="registrationCompleted(selectedTicket?.patient_id,selectedTicket?.checklist_id)"
+                :disabled="!selectedTicket"><i class="fas fa-check"></i> Done</button>
                                 <button class="q-btn btn-next-full" onclick="alert('Serving Next')">Next <i class="fas fa-chevron-right"></i></button>
                             </div>
                         </div>
@@ -408,7 +418,39 @@ if ($full_name !== 'Guest User') {
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
+        <div id="actionModal" class="modal-overlay" :style="{ display: showModal ? 'flex' : 'none' }">
+    <div class="modal-card">
+        <div class="modal-header" id="modalTitle">
+            <!-- Icon changes dynamically based on action -->
+            <i :class="modalAction === 'skip' ? 'fas fa-forward text-warning' : 'fas fa-ban text-danger'"></i> 
+            {{ modalAction === 'skip' ? 'Skip Patient' : 'Cancel Ticket' }}
+        </div>
         
+        <div class="modal-body">
+            <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-weight: bold; text-align: center; border: 1px dashed #cbd5e1;">
+                Ticket Number: 
+                <!-- Display the Ticket Number -->
+                <span style="font-size: 1.2rem; color: var(--primary);">
+                    {{ selectedTicket ? selectedTicket.ticket : '---' }}
+                </span>
+            </div>
+
+            <label class="form-label">Remarks / Reason <span style="color:red">*</span></label>
+            <!-- Bound to Vue data 'modalRemarks' -->
+            <textarea v-model="modalRemarks" class="form-input" style="height: 100px; resize: none;" placeholder="Reason for skipping (e.g. Patient not responding)..."></textarea>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn-modal-cancel" @click="closeModal">Back</button>
+            <!-- Calls the submit function -->
+            <button class="btn-modal-confirm" 
+                    :style="{ backgroundColor: modalAction === 'skip' ? 'var(--warning)' : 'var(--danger)' }"
+                    @click="confirmModalAction">
+                Confirm {{ modalAction === 'skip' ? 'Skip' : 'Cancel' }}
+            </button>
+        </div>
+    </div>
+</div>
     </main>
 
 

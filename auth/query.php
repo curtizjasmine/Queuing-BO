@@ -8,9 +8,12 @@ public static function getPendingPatients($conn, $status1, $status2) {
               if ($_SESSION['jobassign'] == "Triage") {
                $sql = "SELECT *
 FROM tbl_checklist c
-INNER JOIN tbl_patients p ON c.checklist_id = p.checklist_id
-WHERE c.triage = ''
-  AND p.status_patients IN ('Pending', 'Serving'); ";
+INNER JOIN tbl_patients p
+    ON c.checklist_id = p.checklist_id
+WHERE 
+    c.triage = ''
+    OR p.status_patients IN ('Pending', 'Serving');
+";
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         
@@ -26,9 +29,12 @@ WHERE c.triage = ''
           }else  if ($_SESSION['jobassign'] == "Registration"){
                       $sql = "SELECT *
 FROM tbl_checklist c
-INNER JOIN tbl_patients p ON c.checklist_id = p.checklist_id
-WHERE c.triage = 'Done'
-  AND p.status_patients IN ('Pending', 'Serving'); ";
+INNER JOIN tbl_patients p
+    ON c.checklist_id = p.checklist_id
+WHERE 
+    c.registration = '' 
+    AND p.status_patients IN ('Pending', 'Serving');
+";
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         
@@ -40,6 +46,27 @@ WHERE c.triage = 'Done'
         } else {
             return $result;
         }  
+          }else  if ($_SESSION['jobassign'] == "payment"){
+                      $sql = "SELECT *
+FROM tbl_checklist c
+INNER JOIN tbl_patients p
+    ON c.checklist_id = p.checklist_id
+WHERE 
+    c.registration = 'Done'
+    OR p.status_patients IN ('Pending', 'Serving');
+";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Check if no results found
+        if (empty($result)) {
+            return "No pending patients found.";
+        } else {
+            return $result;
+        }  
+
           }
 
     } catch (PDOException $e) {
@@ -48,7 +75,25 @@ WHERE c.triage = 'Done'
     }
 }
 
+public static function hasDoneRegistration($conn,$patient_id){
+  try {
+        $sql = "UPDATE tbl_checklist c
+INNER JOIN tbl_patients p
+    ON c.checklist_id = p.checklist_id
+SET c.registration = 'Done'
+WHERE p.patient_id = ?;
+";
 
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$patient_id]);
+
+        return $stmt->rowCount() > 0;
+
+    } catch (PDOException $e) {
+        echo "Query Error: " . $e->getMessage();
+        return false;
+    }
+}
 public static function doDisplayDetails($conn,$patientId) {
 try {
     $sql = "SELECT p.*, t.*

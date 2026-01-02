@@ -169,13 +169,13 @@ const app = Vue.createApp({
             axios.post('./middleware/routes.php', data)
                 .then(res => {
                     this.pendingTickets = Array.isArray(res.data) ? res.data : [];
-                    console.log(this.pendingTickets );
+                    
                     
                     // 🟢 REALTIME: Send Call Signal
                     this.broadcastUpdate('call', {
                         ticket: ticket,
                         patient_id: id,
-                        station: window.currentStation || 'Counter' // Ensure currentStation exists
+                        station: 'Registration' || 'Counter' // Ensure currentStation exists
                     });
                 })
                 .catch(err => { console.error("Error:", err); });
@@ -241,6 +241,20 @@ const app = Vue.createApp({
         
         savedsData(){
              console.log(this.savedData.civil_Status);
+             
+        },
+        registrationCompleted(id,checklistid){
+                      let x = this;
+ 
+            const data = new FormData();
+            data.append("choice", "done_registration");
+            data.append("patient_id", id);
+               data.append('checkList', checklistid || "");
+            axios.post('./middleware/routes.php', data)
+                .then(res => {
+                   x. display()
+                })
+                .catch(err => { console.error("Error:", err); });
              
         },
 completed(id,checklistid) {
